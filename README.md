@@ -12,5 +12,8 @@
 ##2、将上面得到的加密值拼接到上面的链接中即可，最终的链接形式是：http://i.snssdk.com/video/urls/v/1/toutiao/mp4/{videoid}?r={Math.random()}&s={crc32值}
 ##3、访问这个链接得到一个json数据，需要解析video_list数组中的main_url值，然后用base64解码得到最终的原始视频链接。
 
+# Android版本视频下载器
+#toutiaovideo.apk文件安装即可使用！
+
 
 
