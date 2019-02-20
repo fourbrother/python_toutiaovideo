@@ -1,4 +1,6 @@
+# -*- coding:UTF-8 -*-
 import urllib
+import urllib2
 import re
 import json
 import random
@@ -13,18 +15,19 @@ def right_shift(val, n):
 
 #get html content
 def getHtml(url):
-    page = urllib.urlopen(url)
-    html = page.read()
+    req=urllib2.Request(url)
+    req.add_header('User-Agent','Mozilla/5.0 (Windows NT 6.2; rv:16.0) Gecko/20100101 Firefox/16.0')
+    req.add_header('Accept-Language','zh-CN')
+    res=urllib2.urlopen(req)
+    html=res.read()
     return html
 
 #get videoid from html content
 def getVideoid(html):
-    reg = r'videoid:(.+?),'
+    reg = r'videoId: \'(.+?)\''
     videore = re.compile(reg)
     videolist = re.findall(videore,html)
     for videourl in videolist:
-        lens = len(videourl)-1
-        videourl = videourl[1 : lens]
         return videourl
 
 #parse video json data
@@ -35,8 +38,12 @@ def parseVideoJson(url):
     print 'videojson:'+str(dictstr)
     datastr = dictstr['data']
     dict_videolist = datastr['video_list']
-    dict_video1 = dict_videolist['video_1']
-    main_url = dict_video1['main_url']
+    dict_video1 = dict_videolist.get('video_1')         #极速版
+    dict_video2 = dict_videolist.get('video_2')         #高清版
+    dict_video = dict_video2
+    if (not dict_video) :
+        dict_video = dict_video1
+    main_url = dict_video['main_url']
     return main_url
 
 #download video
@@ -50,7 +57,7 @@ def downLoadVideoFromURL(url):
         print '\tError retrieving the URL:', dest_dir       
 
 #Step 1: get html
-html = getHtml('http://www.toutiao.com/a6361599161015468545/')
+html = getHtml('http://www.toutiao.com/a6406824900753670401/')
 file_object = open('video.html', 'w')
 file_object.write(html)
 file_object.close( )
@@ -61,7 +68,8 @@ print 'videoid:'+str(videoid)
 
 #Step 3: get crc32
 r = str(random.random())[2:]
-url = 'http://i.snssdk.com/video/urls/v/1/toutiao/mp4/%s' % videoid
+#url = 'http://i.snssdk.com/video/urls/v/1/toutiao/mp4/%s' % videoid
+url = 'https://ib.365yg.com/video/urls/v/1/toutiao/mp4/%s' % videoid
 n = urlparse.urlparse(url).path + '?r=' + r
 c = binascii.crc32(n)
 s = right_shift(c, 0)
