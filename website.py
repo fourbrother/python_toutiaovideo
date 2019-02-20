@@ -1,3 +1,4 @@
+# -*- coding:UTF-8 -*-
 import urllib
 import urllib2
 import re
@@ -37,8 +38,12 @@ def parseVideoJson(url):
     print 'videojson:'+str(dictstr)
     datastr = dictstr['data']
     dict_videolist = datastr['video_list']
-    dict_video1 = dict_videolist['video_1']
-    main_url = dict_video1['main_url']
+    dict_video1 = dict_videolist.get('video_1')         #极速版
+    dict_video2 = dict_videolist.get('video_2')         #高清版
+    dict_video = dict_video2
+    if (not dict_video) :
+        dict_video = dict_video1
+    main_url = dict_video['main_url']
     return main_url
 
 #download video
